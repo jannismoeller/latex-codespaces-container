@@ -6,6 +6,9 @@ FROM texlive/texlive:latest-full
 # optionally use a tagged version for reproducability: 
 # e.g. texlive/texlive:TL2025-2025-12-21
 
+# add label, so the image can be tracked back to this repository later
+LABEL org.opencontainers.image.source=https://github.com/jannismoeller/latex-codespaces-container
+
 # ------------------------------------------------------------------------------
 # SYSTEM PACKAGES
 # tools that are NOT part of standard TeX Live but are needed for LaTeX projects
