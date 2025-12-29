@@ -1,0 +1,43 @@
+name: Publish devcontainer image to GHCR
+
+on:
+  workflow_dispatch:
+    inputs:
+      extra_tag:
+        description: "Optional extra tag (e.g. 2025-12-29). 'latest' is always pushed."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push (linux/amd64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ghcr.io/jannismoeller/latex-codespaces-container:latest
+            ${{ inputs.extra_tag && format('ghcr.io/jannismoeller/latex-codespaces-container:{0}', inputs.extra_tag) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
